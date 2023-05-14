@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:panigale/custom.dart';
+import 'package:panigale/screens/book_parking.dart';
 import 'package:panigale/screens/profile.dart';
+import 'package:panigale/screens/rent_parking.dart';
+import 'package:panigale/screens/search.dart';
 import 'package:panigale/screens/settings.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:geolocator/geolocator.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -19,7 +19,7 @@ class _MainPageState extends State<MainPage> {
   int currentIndex = 0;
   final screens = [
     const HomePage(),
-    const ProfilePage(),
+    const SearchPage(),
     const ProfilePage(),
     const SettingsPage(),
   ];
@@ -42,26 +42,26 @@ class _MainPageState extends State<MainPage> {
             currentIndex = index;
           });
         },
-        items:  [
+        items:  const [
           BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
+            icon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: blacksavvy,
+            //backgroundColor: blacksavvy,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.search),
+            icon:  Icon(Icons.search),
             label: 'Search',
-            backgroundColor: whitesavvy,
+            //backgroundColor: whitesavvy,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
+            icon:  Icon(Icons.person),
             label: 'Profile',
-            backgroundColor: whitesavvy,
+            //backgroundColor: whitesavvy,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.settings),
+            icon:  Icon(Icons.settings),
             label: 'Settings',
-            backgroundColor: whitesavvy,
+            //backgroundColor: whitesavvy,
           ),
         ],
       ),
@@ -83,52 +83,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _getCurrentUserName();
-    fetchLocation();
-  }
-    String location = 'reading';
-  String address = 'Enabling Location...';
-
-    Future<void> fetchLocation() async {
-    try {
-      Position position = await _getCurrentLocation();
-      print(position.latitude);
-      location = 'Lat: ${position.latitude}, Long: ${position.longitude}';
-      await GetAddressFromLatLong(position);
-      setState(() {});
-    } catch (e) {
-      print(e.toString());
-      setState(() {
-        location = 'Error getting location';
-      });
-    }
-  }
-
-  Future<Position> _getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw 'Location services are disabled';
-    }
-
-    LocationPermission permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        throw 'Location Permissions are denied';
-      }
-    }
-    if (permission == LocationPermission.deniedForever) {
-      throw 'Location permissions are permanently denied';
-    }
-
-    return await Geolocator.getCurrentPosition();
-  }
-
-  Future<void> GetAddressFromLatLong(Position position) async {
-    List<Placemark> placemark =
-        await placemarkFromCoordinates(position.latitude, position.longitude);
-    print(placemark);
-    Placemark place = placemark[0];
-    address = '${place.locality}, ${place.country}';
   }
 
   Future<void> _getCurrentUserName() async {
@@ -163,7 +117,7 @@ class _HomePageState extends State<HomePage> {
                           const Text(
                             'Hi, ',
                             style: TextStyle(
-                              fontSize: 25,
+                              fontSize: 22,
                               color: Colors.green,
                               fontWeight: FontWeight.bold,
                             ),
@@ -171,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                           Text(
                             '$_name!',
                             style: TextStyle(
-                              fontSize: 25,
+                              fontSize: 22,
                               color: blacksavvy,
                               fontWeight: FontWeight.bold,
                             ),
@@ -191,12 +145,11 @@ class _HomePageState extends State<HomePage> {
 
                           // Update with live location
 
-                          Text(
-                            '${address}',
+                          const Text(
+                            'Pizhaku',
                             style: TextStyle(
-                              fontSize: 15,
+                              fontSize: 22,
                               fontWeight: FontWeight.bold,
-                              color: blacksavvy,
                             ),
                           ),
                         ],
@@ -258,7 +211,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ProfilePage()),
+                                builder: (context) => const BookPage()),
                           );
                         },
                         borderRadius: BorderRadius.circular(08),
@@ -268,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                             borderRadius: BorderRadius.circular(08),
                           ),
                           padding: const EdgeInsets.all(12),
-                          width: 165,
+                         // width: 165,
                           alignment: Alignment.center,
                           child: Text(
                             'Your Parking Spots',
@@ -285,7 +238,7 @@ class _HomePageState extends State<HomePage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const ProfilePage()),
+                                builder: (context) => const RentPage()),
                           );
                         },
                         borderRadius: BorderRadius.circular(08),
@@ -297,7 +250,7 @@ class _HomePageState extends State<HomePage> {
                           ),
                           padding: const EdgeInsets.all(12),
                           alignment: Alignment.center,
-                          width: 165,
+                          //width: 165,
                           child: Text(
                             'Rent A Parking?',
                             style: TextStyle(
